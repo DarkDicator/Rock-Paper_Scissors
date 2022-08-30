@@ -1,4 +1,4 @@
-import { io } from "socket.io-client"
+import socket from "./socket.js"
 import { useState, useRef } from "react"
 import "bootstrap/dist/css/bootstrap.min.css"
 import { useHistory, Switch, Route } from "react-router-dom"
@@ -6,7 +6,7 @@ import Room from "./components/room.js"
 
 
 
-const socket = io('http://localhost:4000')
+//const socket = io('http://localhost:4000')
 
 
 

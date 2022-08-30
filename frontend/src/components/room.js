@@ -1,5 +1,5 @@
 import { useState  } from "react"
-import { io } from "socket.io-client"
+import socket from "../socket.js"
 import rock from "../images/rock.png"
 import paper from "../images/paper.jpg"
 import scissors from "../images/scissors.png"
@@ -14,10 +14,14 @@ function Room() {
   const history = useHistory()
   console.log(history)
   function submitAction(action){
-    //socket.emit('action', action)
+    socket.emit('action', action)
   }
 
   const [ready, setReady] = useState(false)
+
+  socket.on('ready', () => {
+    setReady(true)
+  })
 
   return (
     <div>

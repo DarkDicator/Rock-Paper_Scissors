@@ -42,9 +42,11 @@ io.on('connection', socket => {
         
     })
 
-    socket.on('join-create', async (room, id) => {
+    socket.on('join-create', async (room) => {
         socket.join(room)
+        //console.log(socket)
         const roster = (await io.in(room).fetchSockets()).map(socket => socket.id)
+        if(roster.length == 2) io.to(room).emit('ready')
         console.log(roster)
 
         // if(player1.id){

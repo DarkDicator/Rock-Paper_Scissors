@@ -16,6 +16,7 @@ function App() {
   const [room, setRoom] = useState("")
   const inputRef = useRef()
   const history = useHistory()
+  
 
   const handleInputChange = event => {
     setRoom(event.target.value)
@@ -28,7 +29,7 @@ function App() {
   function createJoinRoom(){
     socket.emit('join-create', room, socket.id)
     setShowButton(false)
-    history.push(room, socket.id)
+    history.push(room, room)
   }
 
   socket.on('join-game', () => {  
@@ -38,9 +39,6 @@ function App() {
     setReady(true)
   })
 
-  socket.on('winner', action => {
-    alert(action)
-  })
 
   return (
     <div className="App">

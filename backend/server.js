@@ -11,8 +11,7 @@ function rps(p1, p2){
     if(p1 == "Scissors") return p2 == "Paper" ? "Player 1 wins" : "Player 2 wins"
 }
 
-let player1 = {}
-let player2 = {}
+let rooms = []
 
 io.on('connection', socket => {
     console.log(socket.id)
@@ -28,17 +27,25 @@ io.on('connection', socket => {
     //     }
     // }    
     // users()
-    socket.on('action', (action, id) => {            
-        if(player1.id === id){
-            player1.action = action
+    socket.on('action', (action, player, roomId) => {
+        currentRoom = rooms[rooms.findIndex(room => room.roomId === roomId)]
+        console.log(currentRoom)
+        if(player == "Player1"){
+            currentRoom.player1Action = action
+            console.log(currentRoom)
         }else{
-            player2.action = action
+            currentRoom.player2Action = action
+            console.log(currentRoom)    
+        }    
+        
+        if(currentRoom.player1Action && currentRoom.player2Action){
+            console.log(rps(currentRoom.player1Action, currentRoom.player2Action))
+            io.to(roomId).emit('winner', rps(currentRoom.player1Action, currentRoom.player2Action))
+            delete currentRoom.player1Action
+            delete currentRoom.player2Action
         }
-        if(player1.action && player2.action){
-            const winner = rps(player1.action, player2.action)
-            console.log(winner)
-            io.emit('winner', winner)        
-        }
+        
+        
         
     })
 
@@ -46,8 +53,19 @@ io.on('connection', socket => {
         socket.join(room)
         //console.log(socket)
         const roster = (await io.in(room).fetchSockets()).map(socket => socket.id)
-        if(roster.length == 2) io.to(room).emit('ready')
-        console.log(roster)
+        if(roster.length == 2){
+            io.to(socket.id).emit('player2')
+            io.to(room).emit('ready')
+            const roomObject = {
+                roomId: room,
+                player1: roster[0],
+                player2: roster[1]
+            }
+            rooms.push(roomObject)            
+            console.log(rooms.findIndex(i => i.roomId === room))
+        }else{
+            io.to(room).emit('player1')
+        }       
 
         // if(player1.id){
         //     player2.id = id

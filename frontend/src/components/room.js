@@ -14,23 +14,41 @@ function Room() {
   const history = useHistory()
   console.log(history)
   function submitAction(action){
-    socket.emit('action', action)
+    socket.emit('action', action, player, history.location.state)
   }
 
   const [ready, setReady] = useState(false)
+  const [player, setPlayer] = useState("")
 
   socket.on('ready', () => {
     setReady(true)
   })
 
+  socket.on('player1', () => {
+    console.log("Set Client to Player 1")
+    setPlayer("Player1")
+  })
+
+  socket.on('player2', () => {
+    if(!player){
+      console.log("Set Client to Player 2")
+      setPlayer("Player2")
+    }
+  })
+
+  socket.on('winner', action => {
+    alert(action)
+  })
+  
+
   return (
     <div>
       {ready ? (
       <>
-      <h1>Pick your action</h1>
+      <h1>Pick your action {player}</h1>
       <button type="button" class="btn btn-primary btn-lg" onClick={() => submitAction("Rock")}><img src={rock} alt="Rock" width="100px" height="100px"/></button>
       <button type="button" class="btn btn-primary btn-lg" onClick={() => submitAction("Paper")}><img src={paper} alt="Paper" width="100px" height="100px"/></button>
-      <button type="button" class="btn btn-primary btn-lg" onClick={() => submitAction("scissors")}><img src={scissors} alt="Scissors" width="100px" height="100px"/></button>
+      <button type="button" class="btn btn-primary btn-lg" onClick={() => submitAction("Scissors")}><img src={scissors} alt="Scissors" width="100px" height="100px"/></button>
       </>)
      :
      (<>
